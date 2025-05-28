@@ -1,35 +1,47 @@
 import 'package:get/get.dart';
+import 'category_service.dart';
+import 'home_product_service.dart';
 
 class CustomerHomeController extends GetxController {
-  final categories = [
-    {'name': 'Headphone', 'image': 'assets/png/headphone.png'},
-    {'name': 'Laptop Stand', 'image': 'assets/png/headphone.png'},
-    {'name': 'Watch', 'image': 'assets/png/headphone.png'},
-    {'name': 'Bluetooth', 'image': 'assets/png/headphone.png'},
-    {'name': 'Phone', 'image': 'assets/png/headphone.png'},
-    {'name': 'Monitor', 'image': 'assets/png/headphone.png'},
-    {'name': 'Keyboard', 'image': 'assets/png/headphone.png'},
-    {'name': 'Mouse', 'image': 'assets/png/headphone.png'},
-    {'name': 'Speaker', 'image': 'assets/png/headphone.png'},
-    {'name': 'Charger', 'image': 'assets/png/headphone.png'},
-    {'name': 'TV', 'image': 'assets/png/headphone.png'},
-    {'name': 'Light', 'image': 'assets/png/headphone.png'},
-  ];
+  var categories = <Map<String, dynamic>>[].obs;
+  var isLoadingCategories = true.obs;
+  var isLoadingProducts = true.obs;
 
-  final flashSale = [
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-  ];
+  var flashSale = <Map<String, dynamic>>[].obs;
+  var featuredProducts = <Map<String, dynamic>>[].obs;
+  var bestSales = <Map<String, dynamic>>[].obs;
 
-  final featuredProducts = [
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-  ];
+  @override
+  void onInit() {
+    super.onInit();
+    loadCategories();
+    loadHomeProducts();
+  }
 
-  final bestSales = [
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-  ];
+  Future<void> loadCategories() async {
+    try {
+      isLoadingCategories.value = true;
+      final data = await CategoryService.fetchCategories();
+      categories.value = data;
+    } catch (e) {
+      print('❌ Error loading categories: $e');
+    } finally {
+      isLoadingCategories.value = false;
+    }
+  }
+
+  Future<void> loadHomeProducts() async {
+    try {
+      isLoadingProducts.value = true;
+      final data = await HomeProductService.fetchHomePageProducts();
+      print('🧪 Home products: $data');
+      flashSale.value = data['flash_sales']!;
+      featuredProducts.value = data['featured_products']!;
+      bestSales.value = data['best_sales']!;
+    } catch (e) {
+      print('❌ Error loading products: $e');
+    } finally {
+      isLoadingProducts.value = false;
+    }
+  }
 }

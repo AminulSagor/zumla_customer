@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../cash_on_delivery/cash_on_delivery_view.dart';
 import 'payment_method_controller.dart';
 
 class PaymentMethodView extends StatelessWidget {
@@ -65,7 +66,13 @@ class PaymentMethodView extends StatelessWidget {
   }) {
     return Obx(() {
       return InkWell(
-        onTap: () => controller.selectMethod(value),
+        onTap: () {
+          controller.selectMethod(value);
+          if (value == "cod") {
+            Get.to(() => CashOnDeliveryView());
+          }
+        },
+
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 16.w),
           padding: EdgeInsets.all(12.w),

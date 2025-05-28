@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../checkout/checkout_view.dart';
 import 'cart_controller.dart';
 import 'package:zumla_customer/widgets/customer_bottom_navigation_widget.dart';
 
@@ -265,7 +266,13 @@ class CartView extends StatelessWidget {
                     final isActive = controller.hasSelectedItems;
 
                     return ElevatedButton(
-                      onPressed: isActive ? controller.checkout : null,
+                      onPressed: isActive
+                          ? () {
+                        controller.checkout(); // Optional logic
+                        Get.to(() => CheckoutView()); // Navigate to CheckoutView
+                      }
+                          : null,
+
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
                           if (states.contains(MaterialState.disabled)) {

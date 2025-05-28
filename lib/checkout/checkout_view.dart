@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../payment_method/payment_method_view.dart';
 import 'checkout_controller.dart';
 
 class CheckoutView extends StatelessWidget {
@@ -173,7 +174,7 @@ class CheckoutView extends StatelessWidget {
                   ),
                   SizedBox(width: 10.w),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {   Get.to(() => PaymentMethodView());},
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                       backgroundColor: const Color(0xFF2F6FD8),
