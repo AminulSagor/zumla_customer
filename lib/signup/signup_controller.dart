@@ -161,7 +161,10 @@ class SignUpController extends GetxController {
 
       if (res['status'] == 'success') {
         final token = res['user']['token'];
+        final phone = res['user']['phone'];
+
         await TokenStorage.saveToken(token);
+        await TokenStorage.savePhoneNumber(phone);
 
         Get.snackbar("Success", "Login successful");
         // Navigate to home or dashboard

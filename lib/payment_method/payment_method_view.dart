@@ -7,8 +7,14 @@ import 'payment_method_controller.dart';
 class PaymentMethodView extends StatelessWidget {
   final controller = Get.put(PaymentMethodController());
 
+
+
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments as Map<String, dynamic>;
+    final customer = args['customer'];
+    final items = args['items'];
+    final total = args['total'];
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -68,11 +74,20 @@ class PaymentMethodView extends StatelessWidget {
       return InkWell(
         onTap: () {
           controller.selectMethod(value);
+
           if (value == "cod") {
-            Get.to(() => CashOnDeliveryView());
+            final args = Get.arguments as Map<String, dynamic>;
+            final customer = args['customer'];
+            final items = args['items'];
+            final total = args['total'];
+
+            Get.to(() => CashOnDeliveryView(), arguments: {
+              'customer': customer,
+              'items': items,
+              'total': total,
+            });
           }
         },
-
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 16.w),
           padding: EdgeInsets.all(12.w),
@@ -104,6 +119,7 @@ class PaymentMethodView extends StatelessWidget {
       );
     });
   }
+
 
   Widget _buildBottomSummary() {
     return Container(

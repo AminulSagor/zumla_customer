@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:readmore/readmore.dart';
+import 'package:zumla_customer/product_details/product_details_service.dart';
 import '../cart/cart_view.dart';
 import 'product_details_controller.dart';
 
@@ -72,9 +73,51 @@ class ProductDetailsView extends StatelessWidget {
 
               ),
               ElevatedButton.icon(
-                onPressed: () {
-                  Get.to(() => CartView());
+                onPressed: () async {
+                  try {
+                    final currentCartSellerId = await ProductDetailsService.getCurrentCartSellerId();
+                    final productSellerId = controller.sellerId.value;
+
+                    Future<void> proceedToAdd() async {
+                      final result = await ProductDetailsService.addToCart(
+                        productId: productId,
+                        quantity: controller.quantity.value.toString(),
+                      );
+                      Get.snackbar("Success", result['message'] ?? 'Added to cart');
+                      Get.to(() => CartView());
+                    }
+
+                    if (currentCartSellerId == null || currentCartSellerId == productSellerId) {
+                      await proceedToAdd();
+                    } else {
+                      // show confirmation dialog
+                      final shouldProceed = await Get.dialog<bool>(
+                        AlertDialog(
+                          title: Text("Replace Cart?"),
+                          content: Text("Your existing cart contains products from another seller. If you continue, they will be removed."),
+                          actions: [
+                            TextButton(
+                              child: Text("Cancel"),
+                              onPressed: () => Get.back(result: false),
+                            ),
+                            ElevatedButton(
+                              child: Text("OK"),
+                              onPressed: () => Get.back(result: true),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (shouldProceed == true) {
+                        await proceedToAdd();
+                      }
+                    }
+                  } catch (e) {
+                    Get.snackbar("Error", e.toString());
+                  }
                 },
+
+
                 icon: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -217,82 +260,63 @@ class ProductDetailsView extends StatelessWidget {
                   right: 0,
                   child: Obx(() {
                     final thumbnails = controller.images;
-                    final visibleThumbnails = thumbnails.take(4).toList();
+                    final visibleThumbnails = thumbnails.length > 4 ? thumbnails.take(3).toList() : thumbnails;
+                    final extraCount = thumbnails.length - 3;
+
 
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children:
-                          visibleThumbnails.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            String image = entry.value;
-                            bool isLast = index == visibleThumbnails.length - 1;
+                      children: visibleThumbnails.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        String image = entry.value;
 
-                            return GestureDetector(
-                              onTap:
-                                  () =>
-                                      controller.selectedImageIndex.value =
-                                          index,
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
-                                    padding: const EdgeInsets.all(2),
+                        bool isExtra = thumbnails.length > 4 && index == 2; // last visible
+                        bool isSelected = controller.selectedImageIndex.value == index;
+
+                        return GestureDetector(
+                          onTap: () {
+                            if (!isExtra) {
+                              controller.selectedImageIndex.value = index;
+                            }
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isSelected ? Colors.blue : Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: image.startsWith('http')
+                                    ? Image.network(image, width: 48, height: 48, fit: BoxFit.cover)
+                                    : Image.asset(image, width: 48, height: 48, fit: BoxFit.cover),
+                              ),
+                              if (isExtra)
+                                Positioned.fill(
+                                  child: Container(
+                                    alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            controller
-                                                        .selectedImageIndex
-                                                        .value ==
-                                                    index
-                                                ? Colors.blue
-                                                : Colors.grey,
-                                      ),
+                                      color: Colors.black.withOpacity(0.4),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: image.startsWith('http')
-                                        ? Image.network(
-                                      image,
-                                      width: 48,
-                                      height: 48,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
-                                    )
-                                        : Image.asset(
-                                      image,
-                                      width: 48,
-                                      height: 48,
-                                      fit: BoxFit.cover,
-                                    )
-
-                                  ),
-                                  if (isLast)
-                                    Positioned.fill(
-                                      child: Center(
-                                        child: Text(
-                                          "4+",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.white.withOpacity(
-                                                  0.8,
-                                                ),
-                                                blurRadius: 6,
-                                                offset: Offset(0, 1),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                    child: Text(
+                                      "+$extraCount",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
                     );
                   }),
                 ),

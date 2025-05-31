@@ -17,6 +17,7 @@ class CategoryService {
         return {
           "name": cat["category"],
           "image": cat["img_path"] ?? "assets/png/headphone.png",
+          "id": cat["category_id"],
         };
       }).toList();
     } else {

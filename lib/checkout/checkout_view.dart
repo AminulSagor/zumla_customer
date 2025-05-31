@@ -5,7 +5,15 @@ import '../payment_method/payment_method_view.dart';
 import 'checkout_controller.dart';
 
 class CheckoutView extends StatelessWidget {
+  //final List<Map<String, dynamic>> items;
+
+  //CheckoutView({Key? key, required this.items}) : super(key: key);
+  CheckoutView({super.key});
+
+
   final controller = Get.put(CheckoutController());
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +34,18 @@ class CheckoutView extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: ClipRRect(
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/address-info-change', arguments: {
+                        'name': controller.customerName.value ?? '',
+                        'phone': controller.customerPhone.value ?? '',
+                        'address': controller.customerAddress.value ?? '',
+                      });
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.asset(
                             'assets/png/world_map.png',
@@ -40,38 +54,51 @@ class CheckoutView extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                      SizedBox(width: 10.w),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 9.h),
-                          child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text("Fouzia Hussain", style: TextStyle(fontWeight: FontWeight.w600)),
-                                  Text("+88016744839", style: TextStyle(fontWeight: FontWeight.w500)),
-                                ],
-                              ),
-                              Spacer(),
-                              Icon(Icons.arrow_forward_ios, size: 16),
-                              SizedBox(width: 8.w)
-                            ],
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 9.h),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.customerName.value ?? "Loading...",
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  controller.customerPhone.value ?? "",
+                                  style: const TextStyle(fontWeight: FontWeight.w500),
+                                ),
+
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8.h),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(text: "Home: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: "Al-Madani Tower, Level-6, Mirboxtula, Sylhet"),
+                        const Icon(Icons.arrow_forward_ios, size: 16),
                       ],
                     ),
                   ),
+
+
+                  SizedBox(height: 8.h),
+                  Obx(() => Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: "Home: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: controller.customerAddress.value ?? "Loading address...",
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
+
+
                 ],
               ),
             ),
@@ -87,24 +114,42 @@ class CheckoutView extends StatelessWidget {
               child: const Text("😃 Wow, Thank you — You’ve picked an amazing product!", style: TextStyle(color: Colors.white)),
             ),
             ...controller.items.map((item) {
-              return ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(item.image, width: 50, height: 50, fit: BoxFit.cover),
-                ),
-                title: Text(item.title),
-                subtitle: Text(item.brand),
-                trailing: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Row(
                   children: [
-                    Text("Qty: ${item.quantity}"),
-                    Text("\$${item.price}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        item.image,
+                        width: 65,
+                        height: 65,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(item.brand, style: const TextStyle(color: Colors.grey)),
+                          Text("\$${item.price}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text("Qty: ${item.quantity}"),
+                      ],
+                    ),
                   ],
                 ),
               );
             }).toList(),
+
             const Divider(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -119,25 +164,23 @@ class CheckoutView extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Padding(
-              padding: EdgeInsets.only(left: 18.w, bottom: 8.h),
-              child: const Text("Delivery", style: TextStyle(fontWeight: FontWeight.bold)),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Delivery Charge", style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text("\$${controller.deliveryCharge.toStringAsFixed(2)}"),
+                ],
+              ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.all(12.w),
-                child: const Row(
-                  children: [
-                    Icon(Icons.local_shipping, size: 20),
-                    SizedBox(width: 10),
-                    Expanded(child: Text("will get by 22-25")),
-                    Text("charge: \$10"),
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("Total", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("\$${controller.total.toStringAsFixed(2)}"),
+                ],
               ),
             ),
             SizedBox(height: 10.h),
@@ -172,9 +215,26 @@ class CheckoutView extends StatelessWidget {
                     "\$${controller.total.toStringAsFixed(0)}",
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
+
                   SizedBox(width: 10.w),
                   ElevatedButton(
-                    onPressed: () {   Get.to(() => PaymentMethodView());},
+                    onPressed: () {
+                      Get.to(() => PaymentMethodView(), arguments: {
+                        'customer': {
+                          'name': controller.customerName.value,
+                          'phone': controller.customerPhone.value,
+                          'address': controller.customerAddress.value,
+                        },
+                        'items': controller.items.map((item) => {
+                          'product_id': item.productId, // ✅ required
+                          'quantity': item.quantity,    // ✅ required
+                          'rate': item.price,           // ✅ rename price → rate
+                        }).toList(),
+
+                        'total': controller.total,
+                      });
+                    },
+
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                       backgroundColor: const Color(0xFF2F6FD8),

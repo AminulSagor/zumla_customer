@@ -23,6 +23,8 @@ class ProductDetailsController extends GetxController {
   var discount = ''.obs;
   var discountPrice = ''.obs;
   var model = ''.obs;
+  var sellerId = ''.obs;
+
 
 
 
@@ -58,6 +60,8 @@ class ProductDetailsController extends GetxController {
       discountPrice.value = data['discount_price']?.toString() ?? price.value;
 
       model.value = data['model'] ?? '';
+      sellerId.value = data['seller_id'] ?? '';
+
 
       // ✅ Corrected dynamic color assignment
       colors.value = List<String>.from(data['colors'] ?? []);

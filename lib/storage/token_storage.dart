@@ -6,7 +6,7 @@ class TokenStorage {
     await prefs.setString('auth_token', token);
   }
 
-  static Future<String?> getToken() async {
+  static Future<String?> getToken()  async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
@@ -45,5 +45,17 @@ class TokenStorage {
     await prefs.remove('password');
     await prefs.remove('remember_me');
   }
+
+
+  static Future<void> savePhoneNumber(String phone) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_phone', phone);
+  }
+
+  static Future<String?> getPhoneNumber() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_phone');
+  }
+
 
 }

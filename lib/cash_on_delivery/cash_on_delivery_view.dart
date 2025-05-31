@@ -8,6 +8,10 @@ class CashOnDeliveryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments as Map<String, dynamic>;
+    final customer = args['customer'];
+    final items = args['items'];
+    final total = args['total'];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Cash On Delivery"),

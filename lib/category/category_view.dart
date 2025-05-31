@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'category_controller.dart';
 import 'package:get/get.dart';
+import '../search_view/search_view.dart';
+import 'category_controller.dart';
 
 class CategoryView extends StatelessWidget {
   final controller = Get.put(CategoryController());
-
-  final Map<String, List<String>> categories = {
-    'Electronics Device': ['Headphone', 'Desktop', 'Laptop', 'Mobile'],
-    'Skin Care': ['Night Cream', 'Powder', 'Nail Polish', 'Cream'],
-    'Travel Essentials': ['Bags', 'Shoes', 'Others Things', 'Suitcase'],
-    'Watches': ['Mechanical', 'Smartwatch', 'Rolex', 'Omega'],
-    'Toys': ['Teddy Bears', 'Stuffed Animals', 'Abacus', 'Cars'],
-    'Gifts': ['Personalized', 'Experiential', 'Practical', 'Luxury'],
-    'Clothing': ['Man', 'Woman', 'Kids', 'Infant'],
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -23,36 +14,50 @@ class CategoryView extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 16.h),
-              _buildSearchBar(),
+              _buildSearchBar(context),
               SizedBox(height: 16.h),
               Expanded(
-                child: ListView(
-                  children: categories.entries.map((entry) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(entry.key, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 10.h),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: entry.value.map((item) {
-                              return Padding(
-                                padding: EdgeInsets.only(right: 20.w),
-                                child: _buildCircleItem(item),
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                child: Obx(() {
+                  if (controller.categories.isEmpty) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                        SizedBox(height: 20.h),
-                      ],
-                    );
-                  }).toList(),
-                ),
+                  return ListView.builder(
+                    itemCount: controller.categories.length,
+                    itemBuilder: (_, index) {
+                      final category = controller.categories[index];
+                      final subCats = category['sub_categories'] ?? [];
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(category['category'] ?? '',
+                              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10.h),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(subCats.length, (subIndex) {
+                                final sub = subCats[subIndex];
+                                return Padding(
+                                  padding: EdgeInsets.only(right: 16.w),
+                                  child: _buildCircleItem(
+                                    sub['sub_category'] ?? '',
+                                    sub['img_path'],
+                                    subCategoryId: sub['sub_category_id'].toString(),
+                                  ),
+
+                                );
+                              }),
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
+                        ],
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
@@ -61,15 +66,17 @@ class CategoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Row(
       children: [
-        Image.asset(
-          'assets/png/arrow_back.png',
-          width: 44.w,
-          height: 44.h,
+        GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Image.asset(
+            'assets/png/arrow_back.png',
+            width: 44.w,
+            height: 44.h,
+          ),
         ),
-
         SizedBox(width: 10.w),
         Expanded(
           child: Container(
@@ -78,11 +85,7 @@ class CategoryView extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
-                )
+                BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
               ],
             ),
             child: TextField(
@@ -98,25 +101,33 @@ class CategoryView extends StatelessWidget {
     );
   }
 
-  Widget _buildCircleItem(String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CircleAvatar(
-          radius: 30.r,
-          backgroundImage: AssetImage('assets/png/headphone.png'),
-        ),
-        SizedBox(height: 6.h),
-        SizedBox(
-          width: 70.w,
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 12.sp),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
+  Widget _buildCircleItem(String label, String? imgUrl, {required String subCategoryId}) {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => SearchView(),  arguments: {'sub_category_id': subCategoryId});
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 30.r,
+            backgroundImage: imgUrl != null && imgUrl.isNotEmpty
+                ? NetworkImage(imgUrl)
+                : AssetImage('assets/png/headphone.png') as ImageProvider,
           ),
-        ),
-      ],
+          SizedBox(height: 6.h),
+          SizedBox(
+            width: 70.w,
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 12.sp),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
 }

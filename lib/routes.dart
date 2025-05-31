@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:zumla_customer/address_info_change/address_info_change_view.dart';
 import 'package:zumla_customer/cart/cart_view.dart';
 import 'package:zumla_customer/category/category_view.dart';
 import 'package:zumla_customer/checkout/checkout_view.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String cardView = '/card-view';
   static const String checkout = '/checkout';
   static const String paymentMethod = '/payment-method';
+  static const String addressInfoChange = '/address-info-change';
 
   static final routes = [
 
@@ -49,7 +51,12 @@ class AppRoutes {
 
 
     GetPage(name: cardView, page: () =>  CartView()),
-    GetPage(name: checkout, page: () =>  CheckoutView()),
+    GetPage(
+      name: checkout,
+      page: () => CheckoutView(),
+    ),
+
     GetPage(name: paymentMethod, page: () =>  PaymentMethodView()),
+    GetPage(name: addressInfoChange, page: () => AddressInfoChangeView()),
   ];
 }

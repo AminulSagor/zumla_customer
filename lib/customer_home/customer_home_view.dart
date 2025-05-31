@@ -15,12 +15,8 @@ class CustomerHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CustomerBottomNavigation(
-        selectedIndex: 0,
-        onTap: (index) {
-          // Handle tab navigation here
-        },
-      ),
+      bottomNavigationBar: CustomerBottomNavigation(selectedIndex: 0),
+
       body: Obx(() {
         if (controller.isLoadingCategories.value || controller.isLoadingProducts.value) {
           return const Center(child: CircularProgressIndicator());
@@ -33,25 +29,34 @@ class CustomerHomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Good Morning,", style: TextStyle(fontSize: 18)),
-                      Text("Fouzia", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text("📍 Sylhet, Bangladesh", style: TextStyle(color: Colors.blue)),
-                    ],
+                  Transform.translate(
+                    offset: Offset(30, 10), // 20 pixels to the right, 0 vertically
+                    child: Transform.scale(
+                      scale: 2.5, // Zoom in
+                      child: Image.asset('assets/png/logo_blue.png', width: 84, height: 84),
+                    ),
                   ),
                   Row(
                     children: [
                       GestureDetector(
                         onTap: () => Get.to(() => SearchView()),
-                        child: _buildIconBox(Icons.search),
+                        child: _buildCustomBox(child: Image.asset('assets/png/whatssap_icon.png', width: 24, height: 24)),
                       ),
                       const SizedBox(width: 12),
-                      _buildIconBox(Icons.notifications_none),
+                      _buildCustomBox(child: const Icon(Icons.notifications_none, color: Colors.black)),
                     ],
+
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              buildSearchBox(
+                onChanged: (value) {
+                  // handle text change
+                },
+                onFilterTap: () {
+                  // handle filter button tap
+                },
               ),
               const SizedBox(height: 16),
 
@@ -66,21 +71,32 @@ class CustomerHomePage extends StatelessWidget {
                   separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (_, index) {
                     final item = controller.categories[index];
-                    return Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundImage: item['image']!.startsWith('http')
-                              ? NetworkImage(item['image']!) as ImageProvider
-                              : AssetImage(item['image']!),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(item['name']!, style: const TextStyle(fontSize: 12)),
-                      ],
+                    final categoryId = item['id'];
+
+                    return GestureDetector(
+                      onTap: () {
+                        print("catedgory id $categoryId");
+                        if (categoryId != null) {
+                          Get.to(() => SearchView(), arguments: {'category_id': categoryId});
+                        }
+                      },
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage: item['image']!.startsWith('http')
+                                ? NetworkImage(item['image']!) as ImageProvider
+                                : AssetImage(item['image']!),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(item['name']!, style: const TextStyle(fontSize: 12)),
+                        ],
+                      ),
                     );
                   },
                 ),
               ),
+
 
               Center(
                 child: Transform.translate(
@@ -225,24 +241,11 @@ class CustomerHomePage extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
-        if (isFlashSale)
-          SizedBox(
-            height: 36,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _filterChip("All", isSelected: false),
-                _filterChip("Popular", isSelected: true),
-                _filterChip("Latest", isSelected: false),
-                _filterChip("Oldest", isSelected: false),
-                _filterChip("Headset", isSelected: false),
-              ],
-            ),
-          ),
 
-        if (isFlashSale) const SizedBox(height: 12),
+
+        //if (isFlashSale) const SizedBox(height: 12),
 
         SizedBox(
           height: 210,
@@ -253,7 +256,7 @@ class CustomerHomePage extends StatelessWidget {
             itemBuilder: (_, index) {
               final item = items[index];
 
-              final String name = item['name']?.toString() ?? 'Unknown';
+              final String name = item['product_name']?.toString() ?? 'Unknown';
               final String imagePath = item['image_path']?.toString() ?? '';
               final String price = item['price']?.toString() ?? '0';
 
@@ -309,7 +312,7 @@ class CustomerHomePage extends StatelessWidget {
                           if (isFlashSale)
                             Positioned(
                               bottom: 4,
-                              right: 4,
+                              right: 100,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
@@ -348,6 +351,7 @@ class CustomerHomePage extends StatelessWidget {
                             ),
                           if (!isFlashSale)
                             Row(
+
                               children: const [
                                 Icon(Icons.star, size: 12, color: Colors.yellow),
                                 SizedBox(width: 2),
@@ -399,7 +403,7 @@ class CustomerHomePage extends StatelessWidget {
 
 }
 
-Widget _buildIconBox(IconData icon) {
+Widget _buildCustomBox({required Widget child}) {
   return Container(
     width: 48,
     height: 48,
@@ -410,13 +414,14 @@ Widget _buildIconBox(IconData icon) {
         BoxShadow(
           color: Colors.black.withOpacity(0.07),
           blurRadius: 20,
-          offset: Offset(0, 10),
+          offset: const Offset(0, 10),
         ),
       ],
     ),
-    child: Center(child: Icon(icon, color: Colors.black)),
+    child: Center(child: child),
   );
 }
+
 
 Widget _filterChip(String label, {required bool isSelected}) {
   return Container(
@@ -433,6 +438,42 @@ Widget _filterChip(String label, {required bool isSelected}) {
         color: isSelected ? Colors.white : Colors.black,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
+    ),
+  );
+}
+
+Widget buildSearchBox({void Function()? onFilterTap, void Function(String)? onChanged}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 10,
+          offset: Offset(0, 4),
+        ),
+      ],
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 16),
+    child: Row(
+      children: [
+        Icon(Icons.search, color: Colors.grey),
+        SizedBox(width: 8),
+        Expanded(
+          child: TextField(
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              hintText: "search",
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: onFilterTap,
+          child: Icon(Icons.tune, color: Colors.black87),
+        ),
+      ],
     ),
   );
 }
