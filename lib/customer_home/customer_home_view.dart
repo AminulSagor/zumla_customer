@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zumla_customer/widgets/customer_bottom_navigation_widget.dart';
 
 import '../category/category_view.dart';
@@ -39,8 +40,18 @@ class CustomerHomePage extends StatelessWidget {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () => Get.to(() => SearchView()),
-                        child: _buildCustomBox(child: Image.asset('assets/png/whatssap_icon.png', width: 24, height: 24)),
+                        onTap: () async {
+                          final phoneNumber = '+96890619606'; // Replace with your number
+                          final whatsappUrl = 'https://wa.me/${phoneNumber.replaceAll('+', '')}';
+                          if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+                            await launchUrl(Uri.parse(whatsappUrl), mode: LaunchMode.externalApplication);
+                          } else {
+                            Get.snackbar('Error', 'Could not launch WhatsApp');
+                          }
+                        },
+                        child: _buildCustomBox(
+                          child: Image.asset('assets/png/whatssap_icon.png', width: 24, height: 24),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       _buildCustomBox(child: const Icon(Icons.notifications_none, color: Colors.black)),
@@ -75,7 +86,6 @@ class CustomerHomePage extends StatelessWidget {
 
                     return GestureDetector(
                       onTap: () {
-                        print("catedgory id $categoryId");
                         if (categoryId != null) {
                           Get.to(() => SearchView(), arguments: {'category_id': categoryId});
                         }

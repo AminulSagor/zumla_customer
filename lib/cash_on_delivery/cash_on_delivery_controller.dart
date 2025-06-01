@@ -3,17 +3,20 @@ import '../order_success/order_success_view.dart';
 import 'order_service.dart';
 
 class CashOnDeliveryController extends GetxController {
+  var isLoading = false.obs;
+
   void confirmOrder() async {
+    isLoading.value = true;
+
     final args = Get.arguments as Map<String, dynamic>;
     final customer = args['customer'];
     final items = args['items'] as List;
     final total = args['total'];
 
-    // Ensure items are formatted as required by API
     final formattedItems = items.map<Map<String, dynamic>>((item) => {
       "product_id": item['product_id'],
       "quantity": item['quantity'],
-      "rate": item['price']?? 10,
+      "rate": item['rate'] ?? 10,
     }).toList();
 
     final response = await OrderService.makeOrder(
@@ -24,10 +27,13 @@ class CashOnDeliveryController extends GetxController {
       items: formattedItems,
     );
 
+    isLoading.value = false;
+
     if (response['status'] == 'success') {
-      Get.to(() => OrderSuccessView());
+      Get.offAll(() => OrderSuccessView());
     } else {
       Get.snackbar("Order Failed", response['message'] ?? "Something went wrong");
     }
   }
 }
+

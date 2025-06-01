@@ -37,6 +37,7 @@ class CartItem {
       inStock: map['stock'] != "0.00",
       store: map['brand'],
       delCharge: double.tryParse(map['del_charge'] ?? '0') ?? 0,
+      quantity: int.tryParse(map['quantity']?.toString() ?? '1') ?? 1,
     );
   }
 }
@@ -48,6 +49,8 @@ class CartController extends GetxController {
   var cartItems = <CartItem>[].obs;
   var selectedIndex = 2.obs;
   var selectAll = false.obs;
+  var isLoading = true.obs; // Add at the top
+
 
   bool get hasSelectedItems => cartItems.any((item) => item.selected);
   int get selectedItemCount => cartItems.where((item) => item.selected).length;
@@ -60,12 +63,16 @@ class CartController extends GetxController {
 
   Future<void> loadCartItems() async {
     try {
+      isLoading.value = true; // Start loading
       final data = await CartService.getCartItems();
       cartItems.value = data.map((e) => CartItem.fromMap(e)).toList();
     } catch (e) {
       print('❌ Error loading cart items: $e');
+    } finally {
+      isLoading.value = false; // Stop loading
     }
   }
+
 
   void toggleSelection(int index) {
     cartItems[index].selected = !cartItems[index].selected;

@@ -5,16 +5,17 @@ import '../cash_on_delivery/cash_on_delivery_view.dart';
 import 'payment_method_controller.dart';
 
 class PaymentMethodView extends StatelessWidget {
-  final controller = Get.put(PaymentMethodController());
-
-
+  const PaymentMethodView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final args = Get.arguments as Map<String, dynamic>;
+    final controller = Get.put(PaymentMethodController(args['total']));
+
     final customer = args['customer'];
     final items = args['items'];
     final total = args['total'];
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -36,12 +37,11 @@ class PaymentMethodView extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          _buildPaymentOption(
-            title: "Credit/Debit Card",
-            subtitle: "Credit/Debit, VISA PayPal Cards Are Available",
-            iconPath: 'assets/png/card_icon.png',
-            value: "card",
-          ),
+          _buildPaymentOption(controller, customer, items, total,
+              title: "Credit/Debit Card",
+              subtitle: "Credit/Debit, VISA PayPal Cards Are Available",
+              iconPath: 'assets/png/card_icon.png',
+              value: "card"),
           SizedBox(height: 16.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -51,36 +51,33 @@ class PaymentMethodView extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          _buildPaymentOption(
-            title: "Cash On Delivery",
-            subtitle: "",
-            iconPath: 'assets/png/cash_on_delivery.png',
-            value: "cod",
-          ),
+          _buildPaymentOption(controller, customer, items, total,
+              title: "Cash On Delivery",
+              subtitle: "",
+              iconPath: 'assets/png/cash_on_delivery.png',
+              value: "cod"),
           const Spacer(),
-          _buildBottomSummary(),
+          _buildBottomSummary(controller),
         ],
       ),
     );
   }
 
-  Widget _buildPaymentOption({
-    required String title,
-    required String subtitle,
-    required String iconPath,
-    required String value,
-  }) {
+  Widget _buildPaymentOption(
+      PaymentMethodController controller,
+      Map customer,
+      List items,
+      double total, {
+        required String title,
+        required String subtitle,
+        required String iconPath,
+        required String value,
+      }) {
     return Obx(() {
       return InkWell(
         onTap: () {
           controller.selectMethod(value);
-
           if (value == "cod") {
-            final args = Get.arguments as Map<String, dynamic>;
-            final customer = args['customer'];
-            final items = args['items'];
-            final total = args['total'];
-
             Get.to(() => CashOnDeliveryView(), arguments: {
               'customer': customer,
               'items': items,
@@ -120,8 +117,7 @@ class PaymentMethodView extends StatelessWidget {
     });
   }
 
-
-  Widget _buildBottomSummary() {
+  Widget _buildBottomSummary(PaymentMethodController controller) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -142,7 +138,7 @@ class PaymentMethodView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Total:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
-              Text("\$${controller.total.toStringAsFixed(0)}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
+              Obx(() => Text("\$${controller.total.toStringAsFixed(2)}")),
             ],
           ),
         ],
@@ -150,3 +146,4 @@ class PaymentMethodView extends StatelessWidget {
     );
   }
 }
+

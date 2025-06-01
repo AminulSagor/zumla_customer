@@ -9,45 +9,46 @@ class CartView extends StatelessWidget {
   final controller = Get.put(CartController());
 
   void _showQuantityDialog(BuildContext context, int index) {
-    final item = controller.cartItems[index];
-
     showDialog(
       context: context,
       builder: (_) {
-        return AlertDialog(
-          title: const Text("Select Quantity"),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  if (item.quantity > 1) {
-                    controller.decrementQuantity(index);
-                  }
-                },
-              ),
-              Text(
-                item.quantity.toString(), // no Obx needed
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () => controller.incrementQuantity(index),
+        return Obx(() {
+          final item = controller.cartItems[index];
+          return AlertDialog(
+            title: const Text("Select Quantity"),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    if (item.quantity > 1) {
+                      controller.decrementQuantity(index);
+                    }
+                  },
+                ),
+                Text(
+                  item.quantity.toString(),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () => controller.incrementQuantity(index),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Done"),
               ),
             ],
-          ),
-
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Done"),
-            ),
-          ],
-        );
+          );
+        });
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +104,15 @@ class CartView extends StatelessWidget {
             ),
             Expanded(
               child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
                 final items = controller.cartItems;
+                if (items.isEmpty) {
+                  return const Center(child: Text("No items in cart."));
+                }
+
                 return ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (_, index) {
@@ -125,7 +134,6 @@ class CartView extends StatelessWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
                             ),
-
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -167,6 +175,7 @@ class CartView extends StatelessWidget {
                 );
               }),
             ),
+
             Padding(
               padding: const EdgeInsets.only(right: 18, bottom: 18),
               child: Row(

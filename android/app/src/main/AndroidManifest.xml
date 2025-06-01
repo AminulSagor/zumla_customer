@@ -1,9 +1,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <queries>
+        <!-- Allow querying for text processing apps -->
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+
+        <!-- If your application checks for inAppBrowserView launch mode support -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
+
     <application
         android:label="zumla_customer"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        <activity
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+
+    <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

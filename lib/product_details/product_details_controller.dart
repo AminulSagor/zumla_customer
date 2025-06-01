@@ -24,31 +24,27 @@ class ProductDetailsController extends GetxController {
   var discountPrice = ''.obs;
   var model = ''.obs;
   var sellerId = ''.obs;
+  var subCategoryId = ''.obs;
+  var isAddingToCart = false.obs;
 
 
-
-
-
-  final suggestedProducts = [
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-    {'name': 'Wireless Headset', 'image': 'assets/png/headphone.png', 'price': 100},
-  ].obs;
+  final suggestedProducts = <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
-    if (productId.isEmpty) {
-      print('❌ Product ID is empty in controller. Skipping fetch.');
-      return;
-    }
     super.onInit();
-    loadProductDetails(productId);
+    if (productId.isNotEmpty) {
+      loadProductDetails(productId);
+    } else {
+      print('❌ Product ID is empty in controller. Skipping fetch.');
+    }
   }
 
   Future<void> loadProductDetails(String productId) async {
     try {
-      print('📦 Loading product with ID: $productId');
 
       isLoading.value = true;
+
       final data = await ProductDetailsService.fetchProductDetails(productId);
 
       productName.value = data['product_name'] ?? '';
@@ -58,12 +54,10 @@ class ProductDetailsController extends GetxController {
       storeName.value = data['brand'] ?? '';
       discount.value = data['discount'] ?? '';
       discountPrice.value = data['discount_price']?.toString() ?? price.value;
-
       model.value = data['model'] ?? '';
       sellerId.value = data['seller_id'] ?? '';
+      subCategoryId.value = data['sub_category_id'] ?? '';
 
-
-      // ✅ Corrected dynamic color assignment
       colors.value = List<String>.from(data['colors'] ?? []);
       selectedColor.value = colors.isNotEmpty ? colors.first : '';
 
@@ -71,6 +65,20 @@ class ProductDetailsController extends GetxController {
       selectedImageIndex.value = 0;
 
       reviews.value = List<Map<String, dynamic>>.from(data['reviews'] ?? []);
+
+      // Fetch suggested products from the same sub category
+      if (subCategoryId.value.isNotEmpty && subCategoryId.value != '0') {
+        final suggestions = await ProductDetailsService.fetchSuggestedProductsBySubCategory(subCategoryId.value);
+        suggestedProducts.value = suggestions.map((item) {
+          return {
+            'name': item['product_name'],
+            'image': item['image_path'],
+            'price': item['price'],
+            'id': item['product_id'],
+          };
+        }).toList();
+      }
+
     } catch (e) {
       print('❌ Error loading product details for ID $productId: $e');
     } finally {

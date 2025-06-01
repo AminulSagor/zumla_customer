@@ -36,6 +36,7 @@ class SignUpController extends GetxController {
   var isPasswordTouched = false.obs;
   var isConfirmPasswordTouched = false.obs;
   var isPhoneTouched = false.obs;
+  var isLoading = false.obs;
 
 
 
@@ -166,7 +167,6 @@ class SignUpController extends GetxController {
         await TokenStorage.saveToken(token);
         await TokenStorage.savePhoneNumber(phone);
 
-        Get.snackbar("Success", "Login successful");
         // Navigate to home or dashboard
         // Example:
         Get.offAllNamed(AppRoutes.homePage);

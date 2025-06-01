@@ -43,10 +43,11 @@ class AppRoutes {
       binding: BindingsBuilder(() {
         final id = Get.parameters['id'];
         if (id != null) {
-          Get.put(ProductDetailsController(id));
+          Get.put(ProductDetailsController(id), tag: id);
         }
       }),
     ),
+
 
 
 

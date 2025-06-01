@@ -59,10 +59,10 @@ class CashOnDeliveryView extends StatelessWidget {
                 ),
               ],
             ),
-            child: SizedBox(
+            child: Obx(() => SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: controller.confirmOrder,
+                onPressed: controller.isLoading.value ? null : controller.confirmOrder,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -70,10 +70,17 @@ class CashOnDeliveryView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: const Text("Confirm Order", style: TextStyle(color: Colors.white)),
+                child: controller.isLoading.value
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                )
+                    : const Text("Confirm Order", style: TextStyle(color: Colors.white)),
               ),
-            ),
-          ),
+            )),
+          )
+
         ],
       ),
     );

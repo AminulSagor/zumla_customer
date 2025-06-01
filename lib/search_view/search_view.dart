@@ -53,22 +53,36 @@ class SearchView extends StatelessWidget {
               Obx(() => SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: controller.brands.map((brand) {
-                    final isSelected = controller.selectedBrand.value == brand;
-                    return Padding(
-                      padding: EdgeInsets.only(right: 8.w),
-                      child: ChoiceChip(
-                        label: Text(brand),
-                        selected: isSelected,
-                        onSelected: (_) {
-                          controller.selectedBrand.value =
-                          isSelected ? null : brand; // toggle
-                        },
+                  children: [
+                    if (controller.selectedBrand.value != null)
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.w),
+                        child: ChoiceChip(
+                          label: Text("Clear"),
+                          selected: false,
+                          onSelected: (_) {
+                            controller.selectedBrand.value = null;
+                          },
+                        ),
                       ),
-                    );
-                  }).toList(),
+                    ...controller.brands.map((brand) {
+                      final isSelected = controller.selectedBrand.value == brand;
+                      return Padding(
+                        padding: EdgeInsets.only(right: 8.w),
+                        child: ChoiceChip(
+                          label: Text(brand),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            controller.selectedBrand.value =
+                            isSelected ? null : brand; // toggle
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ],
                 ),
               )),
+
 
               SizedBox(height: 12.h),
 

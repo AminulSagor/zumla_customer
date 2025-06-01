@@ -34,7 +34,6 @@ class CustomerHomeController extends GetxController {
     try {
       isLoadingProducts.value = true;
       final data = await HomeProductService.fetchHomePageProducts();
-      print('🧪 Home products: $data');
       flashSale.value = data['flash_sales']!;
       featuredProducts.value = data['featured_products']!;
       bestSales.value = data['best_sales']!;

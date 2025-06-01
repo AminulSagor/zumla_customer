@@ -74,7 +74,11 @@ class CheckoutView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Icon(Icons.arrow_forward_ios, size: 16),
+                        Transform.translate(
+                          offset: Offset(0, 14), // 👈 move down by 4 pixels
+                          child: const Icon(Icons.arrow_forward_ios, size: 16),
+                        ),
+
                       ],
                     ),
                   ),

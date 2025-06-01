@@ -254,28 +254,39 @@ class SignUpView extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: controller.isFormValid.value
-                          ? () {
+                          ? () async {
+                        controller.isLoading.value = true;
                         if (controller.isLoginMode.value) {
-                          controller.handleLogin();
+                          await controller.handleLogin();
                         } else {
-                          controller.handleNext(context); // signup
+                          await controller.handleNext(context);
                         }
+                        controller.isLoading.value = false;
                       }
                           : null,
 
 
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF5AB2FF),
+                        backgroundColor: Colors.blue,
                         padding: EdgeInsets.symmetric(
                             horizontal: 40.w, vertical: 12.h),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                       ),
-                      child: Text(
-                        "Next",
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
+                      child: Obx(() {
+                        return controller.isLoading.value
+                            ? SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : Text("Next", style: TextStyle(fontSize: 16.sp));
+                      }),
+
                     ),
                   ),
                 )),

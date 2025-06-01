@@ -4,14 +4,16 @@ import 'package:get/get.dart';
 import 'package:readmore/readmore.dart';
 import 'package:zumla_customer/product_details/product_details_service.dart';
 import '../cart/cart_view.dart';
+import '../routes.dart';
 import 'product_details_controller.dart';
 
 class ProductDetailsView extends StatelessWidget {
-  final String productId = Get.parameters['id'] ?? '';
+
 
   ProductDetailsView({Key? key}) : super(key: key);
 
-  final controller = Get.find<ProductDetailsController>();
+
+
 
   Color _getColorFromName(String name) {
     switch (name.toLowerCase()) {
@@ -36,6 +38,8 @@ class ProductDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String productId = Get.parameters['id'] ?? '';
+    final controller = Get.find<ProductDetailsController>(tag: productId);
     return Scaffold(
       bottomNavigationBar: Container(
           color: Colors.white,
@@ -72,101 +76,116 @@ class ProductDetailsView extends StatelessWidget {
                 ],
 
               ),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  try {
-                    final currentCartSellerId = await ProductDetailsService.getCurrentCartSellerId();
-                    final productSellerId = controller.sellerId.value;
+              Obx(() {
+                final isLoading = controller.isAddingToCart.value;
 
-                    Future<void> proceedToAdd() async {
-                      final result = await ProductDetailsService.addToCart(
-                        productId: productId,
-                        quantity: controller.quantity.value.toString(),
-                      );
-                      Get.snackbar("Success", result['message'] ?? 'Added to cart');
-                      Get.to(() => CartView());
-                    }
+                return ElevatedButton.icon(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                    try {
+                      controller.isAddingToCart.value = true;
 
-                    if (currentCartSellerId == null || currentCartSellerId == productSellerId) {
-                      await proceedToAdd();
-                    } else {
-                      // show confirmation dialog
-                      final shouldProceed = await Get.dialog<bool>(
-                        AlertDialog(
-                          title: Text("Replace Cart?"),
-                          content: Text("Your existing cart contains products from another seller. If you continue, they will be removed."),
-                          actions: [
-                            TextButton(
-                              child: Text("Cancel"),
-                              onPressed: () => Get.back(result: false),
-                            ),
-                            ElevatedButton(
-                              child: Text("OK"),
-                              onPressed: () => Get.back(result: true),
-                            ),
-                          ],
-                        ),
-                      );
+                      final currentCartSellerId = await ProductDetailsService.getCurrentCartSellerId();
+                      final productSellerId = controller.sellerId.value;
 
-                      if (shouldProceed == true) {
-                        await proceedToAdd();
+                      Future<void> proceedToAdd() async {
+                        final result = await ProductDetailsService.addToCart(
+                          productId: productId,
+                          quantity: controller.quantity.value.toString(),
+                        );
+                        Get.snackbar("Success", result['message'] ?? 'Added to cart');
+                        Get.to(() => CartView());
                       }
+
+                      if (currentCartSellerId == null || currentCartSellerId == productSellerId) {
+                        await proceedToAdd();
+                      } else {
+                        final shouldProceed = await Get.dialog<bool>(
+                          AlertDialog(
+                            title: Text("Replace Cart?"),
+                            content: Text("Your existing cart contains products from another seller. If you continue, they will be removed."),
+                            actions: [
+                              TextButton(
+                                child: Text("Cancel"),
+                                onPressed: () => Get.back(result: false),
+                              ),
+                              ElevatedButton(
+                                child: Text("OK"),
+                                onPressed: () => Get.back(result: true),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (shouldProceed == true) {
+                          await proceedToAdd();
+                        }
+                      }
+                    } catch (e) {
+                      Get.snackbar("Error", e.toString());
+                    } finally {
+                      controller.isAddingToCart.value = false;
                     }
-                  } catch (e) {
-                    Get.snackbar("Error", e.toString());
-                  }
-                },
-
-
-                icon: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Icon(Icons.shopping_cart_outlined, color: Colors.white),
-                    Positioned(
-                      right: -6,
-                      top: -6,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
+                  },
+                  icon: isLoading
+                      ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                      : Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+                      Positioned(
+                        right: -6,
+                        top: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Center(
+                            child: Obx(() => Text(
+                              "${controller.quantity.value}",
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                          ),
                         ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child:  Center(
-                          child: Obx(() => Text(
-                            "${controller.quantity.value}",
-                            style: const TextStyle( // ✅ This is fine because it's constant
-                              fontSize: 10,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
-
-
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                label: const Text(
-                  "Add To Cart",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                      )
+                    ],
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  label: Text(
+                    isLoading ? "Adding..." : "Add To Cart",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              )
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              }),
+
             ],
           ),
         ),
@@ -246,10 +265,10 @@ class ProductDetailsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite_border),
-                      onPressed: () {},
-                    ),
+                    // child: IconButton(
+                    //   icon: const Icon(Icons.favorite_border),
+                    //   onPressed: () {},
+                    // ),
                   ),
                 ),
 
@@ -557,119 +576,140 @@ class ProductDetailsView extends StatelessWidget {
                           final item = controller.suggestedProducts[i];
                           final String name = item['name'] as String;
                           final String image = item['image'] as String;
-                          final int price = item['price'] as int;
+                          final double price = double.tryParse(item['price']?.toString() ?? '0') ?? 0;
+                          final String suggestedProductId = item['id'].toString();
 
-                          return Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Container(
-                                width: 170,
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.07),
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Image.asset(
-                                            image,
-                                            height: 130,
-                                            width: double.infinity,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 8,
-                                          right: 8,
-                                          child: Icon(
-                                            Icons.favorite_border,
-                                            size: 20,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20),
-                                    Text(
-                                      name,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '\$$price',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        SizedBox(width: 6),
-                                        Icon(
-                                          Icons.star,
-                                          size: 16,
-                                          color: Colors.amber,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '4.5',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 10,
-                                right: 10,
-                                child: Container(
-                                  width: 28,  // smaller circle width
-                                  height: 28, // smaller circle height
+                          return GestureDetector(
+                            onTap: () {
+                              Get.offNamed('${AppRoutes.productDetails}?id=$suggestedProductId');
+                            },
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Container(
+                                  width: 170,
+                                  padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.blue.withOpacity(0.6),
-                                        blurRadius: 6,
-                                        offset: Offset(0, 2),
+                                        color: Colors.black.withOpacity(0.07),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 4),
                                       ),
                                     ],
                                   ),
-                                  child: IconButton(
-                                    icon: Icon(Icons.add, color: Colors.white),
-                                    onPressed: () {
-                                      // add to cart action
-                                    },
-                                    iconSize: 18, // smaller icon size
-                                    padding: EdgeInsets.all(0),
-                                    constraints: BoxConstraints(
-                                      minHeight: 28,
-                                      minWidth: 28,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(12),
+                                            child: image.isNotEmpty
+                                                ? Image.network(
+                                              image,
+                                              height: 130,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => Image.asset(
+                                                'assets/png/customer_home_head.png',
+                                                height: 130,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )
+                                                : Image.asset(
+                                              'assets/png/customer_home_head.png',
+                                              height: 130,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            ),
+
+                                          ),
+                                          Positioned(
+                                            top: 8,
+                                            right: 8,
+                                            child: Icon(
+                                              Icons.favorite_border,
+                                              size: 20,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        name,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '\$${price.toStringAsFixed(2)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+
+                                          SizedBox(width: 6),
+                                          Icon(
+                                            Icons.star,
+                                            size: 16,
+                                            color: Colors.amber,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '4.5',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: Container(
+                                    width: 28,  // smaller circle width
+                                    height: 28, // smaller circle height
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.blue.withOpacity(0.6),
+                                          blurRadius: 6,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: IconButton(
+                                      icon: Icon(Icons.add, color: Colors.white),
+                                      onPressed: () {
+                                        // add to cart action
+                                      },
+                                      iconSize: 18, // smaller icon size
+                                      padding: EdgeInsets.all(0),
+                                      constraints: BoxConstraints(
+                                        minHeight: 28,
+                                        minWidth: 28,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                            ],
+                              ],
+                            ),
                           );
                         },
                       ),
@@ -802,7 +842,8 @@ class ProductDetailsView extends StatelessWidget {
   }
 
   Widget _colorOption(String name, Color color) {
-    final controller = Get.find<ProductDetailsController>();
+    final String productId = Get.parameters['id'] ?? '';
+    final controller = Get.find<ProductDetailsController>(tag: productId);
     return Obx(
       () => GestureDetector(
         onTap: () => controller.selectedColor.value = name,

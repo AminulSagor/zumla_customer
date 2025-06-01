@@ -65,5 +65,21 @@ class ProductDetailsService {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> fetchSuggestedProductsBySubCategory(String subCategoryId) async {
+    final url = Uri.parse('https://jumlaonline.com/api/subcategory_products.php?sub_category_id=$subCategoryId');
+
+    final response = await http.get(url);
+    final body = jsonDecode(response.body);
+
+
+
+    if (response.statusCode == 200 && body['status'] == 'success') {
+      return List<Map<String, dynamic>>.from(body['data']);
+    } else {
+      throw Exception('Failed to fetch suggested products');
+    }
+  }
+
+
 
 }
