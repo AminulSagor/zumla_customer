@@ -8,6 +8,7 @@ import 'package:zumla_customer/routes.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env"); // Load .env file
+  await Future.delayed(Duration(seconds: 5));
   runApp(const MyApp());
 }
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           ),
-          initialRoute: AppRoutes.signUp, // or your starting page
+          initialRoute: AppRoutes.homePage, // Set SplashScreen here
           getPages: AppRoutes.routes,
         );
       },

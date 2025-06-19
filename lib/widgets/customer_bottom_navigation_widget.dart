@@ -5,6 +5,8 @@ import 'package:zumla_customer/search_view/search_view.dart';
 import 'package:zumla_customer/widgets/tooltip_card_with_arrow_widget.dart';
 
 import '../cart/cart_view.dart';
+import '../profile/profile_view.dart';
+import '../storage/token_storage.dart';
 
 class CustomerBottomNavigation extends StatelessWidget {
   final int selectedIndex;
@@ -26,30 +28,29 @@ class CustomerBottomNavigation extends StatelessWidget {
       Get.offAll(() => CartView());
         break;
       case 3:
-      // Get.offAll(() => ProfileView());
+      Get.offAll(() => ProfileView());
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: CurvedTopClipper(),
-      child: Container(
-        color: Colors.blue,
-        padding: const EdgeInsets.only(top: 12, bottom: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _navItem(Icons.home, "Home", 0),
-            _navItem(Icons.search, "Search", 1),
-            _navItem(Icons.shopping_bag_outlined, "Cart", 2),
-            _profileItem(3),
-          ],
-        ),
+    return Container(
+      color: Colors.blue,
+      padding: const EdgeInsets.fromLTRB(26, 12, 26, 8),
+
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _navItem(Icons.home, "Home", 0),
+          _navItem(Icons.search, "Search", 1),
+          _navItem(Icons.shopping_bag_outlined, "Cart", 2),
+          _profileItem(3),
+        ],
       ),
     );
   }
+
 
   Widget _navItem(IconData icon, String label, int index) {
     final isSelected = selectedIndex == index;
@@ -85,13 +86,25 @@ class CustomerBottomNavigation extends StatelessWidget {
   Widget _profileItem(int index) {
     final isSelected = selectedIndex == index;
     return GestureDetector(
-      onTap: () => _handleNavigation(index),
+      onTap: () async {
+        final token = await TokenStorage.getToken();
+        if (token != null && token.isNotEmpty) {
+          _handleNavigation(index); // Navigate to Profile
+        } else {
+          Get.offAllNamed('/signup', arguments: {'isLogin': true});
+        }
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
             radius: 12,
-            backgroundImage: AssetImage('assets/png/headphone.png'),
+            backgroundColor: Colors.grey.shade300,
+            child: Icon(
+              Icons.person,
+              size: 16,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -115,5 +128,6 @@ class CustomerBottomNavigation extends StatelessWidget {
       ),
     );
   }
+
 
 }
