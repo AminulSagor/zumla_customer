@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../signup/signup_view.dart';
+import 'logout_service.dart';
 
 class SettingsController extends GetxController {
   var isAccountExpanded = false.obs;
@@ -9,8 +13,20 @@ class SettingsController extends GetxController {
   void toggleCountry() => isCountryExpanded.toggle();
   void toggleLanguage() => isLanguageExpanded.toggle();
 
-  void logout() {
-    // Add your logout logic here
-    print("Logging out...");
+  Future<void> logout() async {
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+
+    final success = await LogoutService.logoutUser();
+    Get.back(); // Close the loading dialog
+
+    if (success) {
+      Get.offAll(() => SignUpView()); // Navigate to login screen
+      Get.snackbar("Success", "Logout Successful");
+    } else {
+      Get.snackbar("Error", "Logout failed. Please try again.");
+    }
   }
 }

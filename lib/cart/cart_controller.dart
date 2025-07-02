@@ -29,13 +29,13 @@ class CartItem {
 
   factory CartItem.fromMap(Map<String, dynamic> map) {
     return CartItem(
-      productId: int.tryParse(map['product_id'] ?? '0') ?? 0, // ✅ Set from API response
+      productId: int.tryParse(map['cart_id'] ?? '0') ?? 0, // ✅ Set from API response
       image: map['image_path'] ?? '',
       title: map['product_name'] ?? '',
       brand: map['brand'] ?? '',
       price: double.tryParse(map['discount_price']?.toString() ?? map['price'] ?? '0') ?? 0,
       inStock: map['stock'] != "0.00",
-      store: map['brand'],
+      store: map['store_name'],
       delCharge: double.tryParse(map['del_charge'] ?? '0') ?? 0,
       quantity: int.tryParse(map['quantity']?.toString() ?? '1') ?? 1,
     );

@@ -14,6 +14,8 @@ class CartService {
       },
     );
 
+    print('Response Body: ${response.body}');
+
     final jsonBody = jsonDecode(response.body);
     if (response.statusCode == 200 && jsonBody['status'] == 'success') {
       return List<Map<String, dynamic>>.from(jsonBody['data']);

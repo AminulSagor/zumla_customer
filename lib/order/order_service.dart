@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../storage/token_storage.dart';
+import 'package:get/get.dart';
+
 
 class CustomerOrderService {
   static const String _baseUrl = 'https://jumlaonline.com/api/get_cus_orders.php';
@@ -37,7 +39,7 @@ class CustomerOrderService {
     return orders.map<Map<String, dynamic>>((order) {
       return {
         'id': order['order_id'],
-        'status': order['status'].capitalizeFirst,
+        'status': order['status'][0].toUpperCase() + order['status'].substring(1),
         'items': (order['items'] as List).map((item) {
           return {
             'name': item['product_name'],

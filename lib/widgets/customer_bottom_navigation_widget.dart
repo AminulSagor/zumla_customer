@@ -7,6 +7,7 @@ import 'package:zumla_customer/widgets/tooltip_card_with_arrow_widget.dart';
 import '../cart/cart_view.dart';
 import '../profile/profile_view.dart';
 import '../storage/token_storage.dart';
+import 'login_required_dialog_widgets.dart';
 
 class CustomerBottomNavigation extends StatelessWidget {
   final int selectedIndex;
@@ -16,7 +17,14 @@ class CustomerBottomNavigation extends StatelessWidget {
     required this.selectedIndex,
   }) : super(key: key);
 
-  void _handleNavigation(int index) {
+  Future<void> _handleNavigation(int index) async {
+    final token = await TokenStorage.getToken();
+
+    if ((index == 2 || index == 3) && (token == null || token.isEmpty)) {
+      showLoginRequiredDialog();
+
+      return;
+    }
     switch (index) {
       case 0:
         Get.offAll(() => CustomerHomePage());

@@ -26,7 +26,12 @@ class OrderController extends GetxController {
 
 
 
-  void changeTab(String tab) => selectedTab.value = tab;
+  void changeTab(String tab) {
+    selectedTab.value = tab;
+    fetchOrders();
+  }
+
+
 
   void cancelOrder(int index) {
     orders.removeAt(index);

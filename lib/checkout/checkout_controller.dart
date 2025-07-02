@@ -11,6 +11,7 @@ class CheckoutItem {
   final double price;
   final int quantity;
   final double delCharge;
+  final String? store;
 
   CheckoutItem({
     required this.productId,
@@ -20,6 +21,7 @@ class CheckoutItem {
     required this.price,
     required this.quantity,
     required this.delCharge,
+    this.store,
   });
 }
 
@@ -47,6 +49,7 @@ class CheckoutController extends GetxController {
       price: (e['rate'] != null) ? (e['rate'] as num).toDouble() : 0.0,
       quantity: e['quantity'] ?? 1,
       delCharge: (e['del_charge'] != null) ? (e['del_charge'] as num).toDouble() : 0.0,
+      store: e['store'],
     )).toList();
   }
 

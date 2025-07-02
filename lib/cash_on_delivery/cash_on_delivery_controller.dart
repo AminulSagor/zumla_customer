@@ -13,11 +13,15 @@ class CashOnDeliveryController extends GetxController {
     final items = args['items'] as List;
     final total = args['total'];
 
+    print("🛒 Incoming items: $items");
+    print("👤 Customer Info: $customer");
+
     final formattedItems = items.map<Map<String, dynamic>>((item) => {
-      "product_id": item['product_id'],
+      "cart_id": item['cart_id'],
       "quantity": item['quantity'],
       "rate": item['rate'] ?? 10,
     }).toList();
+
 
     final response = await OrderService.makeOrder(
       name: customer['name'],

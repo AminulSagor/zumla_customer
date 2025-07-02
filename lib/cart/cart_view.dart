@@ -196,6 +196,7 @@ class CartView extends StatelessWidget {
                           'rate': item.price,               // ✅ Rename 'price' -> 'rate'
                           'image': item.image,
                           'del_charge': item.delCharge,
+                          'store': item.store,
                         })
                             .toList();
 

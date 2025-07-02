@@ -162,19 +162,19 @@ class SearchView extends StatelessWidget {
                                               fit: BoxFit.cover,
                                             ),
                                   ),
-                                  Positioned(
-                                    top: 8,
-                                    right: 8,
-                                    child: CircleAvatar(
-                                      radius: 14.r,
-                                      backgroundColor: Colors.white,
-                                      child: Icon(
-                                        Icons.favorite_border,
-                                        size: 16,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                                  // Positioned(
+                                  //   top: 8,
+                                  //   right: 8,
+                                  //   child: CircleAvatar(
+                                  //     radius: 14.r,
+                                  //     backgroundColor: Colors.white,
+                                  //     child: Icon(
+                                  //       Icons.favorite_border,
+                                  //       size: 16,
+                                  //       color: Colors.black,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                               Padding(
@@ -199,29 +199,29 @@ class SearchView extends StatelessWidget {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(width: 6.w),
-                                        Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 16,
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Text(
-                                          "4.5",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        CircleAvatar(
-                                          radius: 14.r,
-                                          backgroundColor: Color(0xFF2F6FD8),
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
+                                        // SizedBox(width: 6.w),
+                                        // Icon(
+                                        //   Icons.star,
+                                        //   color: Colors.amber,
+                                        //   size: 16,
+                                        // ),
+                                        // SizedBox(width: 4.w),
+                                        // Text(
+                                        //   "4.5",
+                                        //   style: TextStyle(
+                                        //     fontWeight: FontWeight.w500,
+                                        //   ),
+                                        // ),
+                                        // Spacer(),
+                                        // CircleAvatar(
+                                        //   radius: 14.r,
+                                        //   backgroundColor: Color(0xFF2F6FD8),
+                                        //   child: Icon(
+                                        //     Icons.add,
+                                        //     size: 16,
+                                        //     color: Colors.white,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ],

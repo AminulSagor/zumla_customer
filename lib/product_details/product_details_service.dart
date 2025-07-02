@@ -9,6 +9,8 @@ class ProductDetailsService {
 
     final response = await http.get(Uri.parse(url));
 
+    print('📥 Response Body: ${response.body}');
+
     if (response.statusCode == 200) {
       final jsonBody = jsonDecode(response.body);
       if (jsonBody['status'] == 'success') {

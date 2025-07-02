@@ -39,6 +39,9 @@ class OrderService {
       }),
     );
 
+    print("📥 Response status: ${response.statusCode}");
+    print("📥 Response body: ${response.body}");
+
     final data = jsonDecode(response.body);
     return data;
   }

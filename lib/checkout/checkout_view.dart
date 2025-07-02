@@ -157,15 +157,19 @@ class CheckoutView extends StatelessWidget {
             const Divider(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.storefront, color: Color(0xFF2F6FD8)),
+                  const Icon(Icons.storefront, color: Color(0xFF2F6FD8)),
                   SizedBox(width: 8),
-                  Text("Vibe & Vogue", style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text(
+                    controller.items.isNotEmpty ? controller.items.first.store ?? "Unknown Store" : "Unknown Store",
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  ),
                 ],
               ),
             ),
+
             SizedBox(height: 16.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -230,7 +234,7 @@ class CheckoutView extends StatelessWidget {
                           'address': controller.customerAddress.value,
                         },
                         'items': controller.items.map((item) => {
-                          'product_id': item.productId, // ✅ required
+                          'cart_id': item.productId, // ✅ required
                           'quantity': item.quantity,    // ✅ required
                           'rate': item.price,           // ✅ rename price → rate
                         }).toList(),

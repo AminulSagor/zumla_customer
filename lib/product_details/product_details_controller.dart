@@ -8,7 +8,9 @@ class ProductDetailsController extends GetxController {
 
   final images = <String>[].obs;
   final reviews = <Map<String, dynamic>>[].obs;
-  final colors = <String>[].obs;
+  final colors = <Map<String, dynamic>>[].obs;
+  final variants = <Map<String, dynamic>>[].obs;
+
 
   var productName = ''.obs;
   var price = ''.obs;
@@ -26,9 +28,13 @@ class ProductDetailsController extends GetxController {
   var sellerId = ''.obs;
   var subCategoryId = ''.obs;
   var isAddingToCart = false.obs;
+  final isOutOfStockTapped = false.obs;
+
 
 
   final suggestedProducts = <Map<String, dynamic>>[].obs;
+
+
 
   @override
   void onInit() {
@@ -58,11 +64,13 @@ class ProductDetailsController extends GetxController {
       sellerId.value = data['seller_id'] ?? '';
       subCategoryId.value = data['sub_category_id'] ?? '';
 
-      colors.value = List<String>.from(data['colors'] ?? []);
-      selectedColor.value = colors.isNotEmpty ? colors.first : '';
+      colors.value = List<Map<String, dynamic>>.from(data['colors'] ?? []);
+      selectedColor.value = colors.isNotEmpty ? colors.first['id'] : '';
+
 
       images.value = List<String>.from(data['images'] ?? []);
       selectedImageIndex.value = 0;
+      variants.value = List<Map<String, dynamic>>.from(data['variants'] ?? []);
 
       reviews.value = List<Map<String, dynamic>>.from(data['reviews'] ?? []);
 
