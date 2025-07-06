@@ -177,86 +177,9 @@ class CustomerHomePage extends StatelessWidget {
                         height: 160,
                       ),
                     ),
-                    Positioned(
-                      top: 6,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          "Limited Time!",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 45,
-                      left: 16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Get Special Offer",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                          Transform.translate(
-                            offset: const Offset(0, -8),
-                            child: Row(
-                              children: const [
-                                SizedBox(width: 108),
-                                Text(
-                                  "up to",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  "40%",
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 38,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: const Text(
-                          "Get",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
+
+
+
 
                     // 🔽 Sliding text at the bottom
                     Positioned(
@@ -347,6 +270,7 @@ class CustomerHomePage extends StatelessWidget {
         SizedBox(
           height: 210, // Scrollable height for each section
           child: GridView.builder(
+
             padding: EdgeInsets.zero,
             itemCount: items.length,
             scrollDirection: Axis.vertical,
@@ -354,7 +278,7 @@ class CustomerHomePage extends StatelessWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 170 / 210,
+              childAspectRatio: 210 / 220,
             ),
             itemBuilder: (_, index) {
               final item = items[index];
@@ -413,37 +337,7 @@ class CustomerHomePage extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     ),
                           ),
-                          // Positioned(
-                          //   top: 8,
-                          //   right: 8,
-                          //   child: Container(
-                          //     padding: const EdgeInsets.all(4),
-                          //     decoration: const BoxDecoration(
-                          //       color: Colors.white,
-                          //       shape: BoxShape.circle,
-                          //     ),
-                          //     child: const Icon(Icons.favorite_border, size: 16),
-                          //   ),
-                          // ),
-                          // if (isFlashSale)
-                          //   Positioned(
-                          //     bottom: 4,
-                          //     right: 12,
-                          //     child: Container(
-                          //       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          //       decoration: BoxDecoration(
-                          //         color: Colors.blue,
-                          //         borderRadius: BorderRadius.circular(12),
-                          //       ),
-                          //       child: Row(
-                          //         children: const [
-                          //           Icon(Icons.star, size: 12, color: Colors.yellow),
-                          //           SizedBox(width: 2),
-                          //           Text("4.5", style: TextStyle(fontSize: 12, color: Colors.white)),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   ),
+
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -475,18 +369,21 @@ class CustomerHomePage extends StatelessWidget {
                                 fontSize: 16,
                               ),
                             ),
+
                           ],
                         ],
-                      )
+                      ),
 
 
                     ],
                   ),
+
                 ),
               );
             },
           ),
         ),
+    
       ],
     );
   }
