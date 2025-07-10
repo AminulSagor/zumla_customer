@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../widgets/product_card_section_widget.dart';
 import 'search_view_controller.dart';
 import 'package:zumla_customer/widgets/customer_bottom_navigation_widget.dart';
 
@@ -13,7 +14,8 @@ class SearchView extends StatelessWidget {
       bottomNavigationBar: CustomerBottomNavigation(selectedIndex: 1),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.fromLTRB(16.w, 16.w, 16.w, 0),
+
           child: Column(
             children: [
               // Search bar
@@ -102,137 +104,15 @@ class SearchView extends StatelessWidget {
                     );
                   }
 
-                  return GridView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: controller.filteredProducts.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12.w,
-                      mainAxisSpacing: 12.h,
-                      childAspectRatio: 0.95,
-                    ),
-                    itemBuilder: (_, index) {
-                      final product = controller.filteredProducts[index];
-
-                      final imagePath = product['image_path'];
-                      final name = product['product_name'] ?? '';
-                      final price = product['price'] ?? '';
-
-                      return GestureDetector(
-                        onTap: () {
-                          final id = product['product_id'];
-                          if (id != null) {
-                            Get.toNamed('/product-details?id=$id');
-                          }
-                        },
-                        child: Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(16.r),
-                          color: Colors.white,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(16.r),
-                                      topRight: Radius.circular(16.r),
-                                    ),
-                                    child:
-                                        imagePath != null &&
-                                                imagePath.toString().isNotEmpty
-                                            ? Image.network(
-                                              imagePath,
-                                              height: 100.h,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (_, __, ___) => Image.asset(
-                                                    'assets/png/customer_home_head.png',
-                                                    height: 100.h,
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                            )
-                                            : Image.asset(
-                                              'assets/png/customer_home_head.png',
-                                              height: 100.h,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover,
-                                            ),
-                                  ),
-                                  // Positioned(
-                                  //   top: 8,
-                                  //   right: 8,
-                                  //   child: CircleAvatar(
-                                  //     radius: 14.r,
-                                  //     backgroundColor: Colors.white,
-                                  //     child: Icon(
-                                  //       Icons.favorite_border,
-                                  //       size: 16,
-                                  //       color: Colors.black,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.w),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 6.h),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "\$$price",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        // SizedBox(width: 6.w),
-                                        // Icon(
-                                        //   Icons.star,
-                                        //   color: Colors.amber,
-                                        //   size: 16,
-                                        // ),
-                                        // SizedBox(width: 4.w),
-                                        // Text(
-                                        //   "4.5",
-                                        //   style: TextStyle(
-                                        //     fontWeight: FontWeight.w500,
-                                        //   ),
-                                        // ),
-                                        // Spacer(),
-                                        // CircleAvatar(
-                                        //   radius: 14.r,
-                                        //   backgroundColor: Color(0xFF2F6FD8),
-                                        //   child: Icon(
-                                        //     Icons.add,
-                                        //     size: 16,
-                                        //     color: Colors.white,
-                                        //   ),
-                                        // ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                  return ProductCardSectionWidget(
+                    title: "",
+                    items: controller.filteredProducts.cast<Map<String, dynamic>>(),
+                    sectionKey: GlobalKey(),
+                    scrollController: ScrollController(),
+                    showTitle: false,
+                    expandGrid: true,
                   );
+
                 }),
               ),
             ],

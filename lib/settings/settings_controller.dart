@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zumla_customer/customer_home/customer_home_view.dart';
 
 import '../signup/signup_view.dart';
 import 'logout_service.dart';
@@ -23,7 +24,7 @@ class SettingsController extends GetxController {
     Get.back(); // Close the loading dialog
 
     if (success) {
-      Get.offAll(() => SignUpView()); // Navigate to login screen
+      Get.offAll(() =>CustomerHomePage()); // Navigate to login screen
       Get.snackbar("Success", "Logout Successful");
     } else {
       Get.snackbar("Error", "Logout failed. Please try again.");

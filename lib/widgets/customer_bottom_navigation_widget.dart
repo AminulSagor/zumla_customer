@@ -44,7 +44,7 @@ class CustomerBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue,
+      color: Color(0xFF2F6FD8),
       padding: const EdgeInsets.fromLTRB(26, 12, 26, 8),
 
       child: Row(

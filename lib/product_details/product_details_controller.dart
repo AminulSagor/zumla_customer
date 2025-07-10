@@ -48,25 +48,33 @@ class ProductDetailsController extends GetxController {
 
   Future<void> loadProductDetails(String productId) async {
     try {
-
+      print('🔍 Starting to load product details for productId: $productId');
       isLoading.value = true;
 
       final data = await ProductDetailsService.fetchProductDetails(productId);
+
+      if (data == null) {
+        print('⚠️ No product data received from API.');
+        return;
+      }
+
+      print('✅ Product data received: $data');
 
       productName.value = data['product_name'] ?? '';
       price.value = data['price'] ?? '0';
       stock.value = data['stock'] ?? '0';
       description.value = data['description'] ?? '';
-      storeName.value = data['brand'] ?? '';
+      storeName.value = data['store_name'] ?? '';
       discount.value = data['discount'] ?? '';
       discountPrice.value = data['discount_price']?.toString() ?? price.value;
       model.value = data['model'] ?? '';
       sellerId.value = data['seller_id'] ?? '';
       subCategoryId.value = data['sub_category_id'] ?? '';
 
+      print('📊 Product basic fields set successfully');
+
       colors.value = List<Map<String, dynamic>>.from(data['colors'] ?? []);
       selectedColor.value = colors.isNotEmpty ? colors.first['id'] : '';
-
 
       images.value = List<String>.from(data['images'] ?? []);
       selectedImageIndex.value = 0;
@@ -74,23 +82,32 @@ class ProductDetailsController extends GetxController {
 
       reviews.value = List<Map<String, dynamic>>.from(data['reviews'] ?? []);
 
-      // Fetch suggested products from the same sub category
+      print('🎨 Colors, images, variants, and reviews set successfully');
+
+      // Suggested products
       if (subCategoryId.value.isNotEmpty && subCategoryId.value != '0') {
+        print('🔎 Fetching suggested products for subCategoryId: ${subCategoryId.value}');
         final suggestions = await ProductDetailsService.fetchSuggestedProductsBySubCategory(subCategoryId.value);
         suggestedProducts.value = suggestions.map((item) {
           return {
-            'name': item['product_name'],
-            'image': item['image_path'],
-            'price': item['price'],
-            'id': item['product_id'],
+            'name': item['product_name'] ?? '',
+            'image': item['image_path'] ?? '',
+            'price': item['price'] ?? '0',
+            'id': item['product_id'] ?? '',
+            'seller_id': item['seller_id'] ?? '',  // ✅ Add this
           };
         }).toList();
+
+        print('✅ Suggested products loaded: ${suggestedProducts.length}');
       }
 
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ Error loading product details for ID $productId: $e');
+      print('🛠️ Stack Trace: $stackTrace');
     } finally {
       isLoading.value = false;
+      print('🔚 Finished loading product details for productId: $productId');
     }
   }
+
 }

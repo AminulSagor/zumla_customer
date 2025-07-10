@@ -33,9 +33,27 @@ class OrderController extends GetxController {
 
 
 
-  void cancelOrder(int index) {
-    orders.removeAt(index);
+  Future<void> cancelOrder(int index) async {
+    final orderIdRaw = orders[index]['id'];
+    final int? orderId = orderIdRaw is int
+        ? orderIdRaw
+        : int.tryParse(orderIdRaw.toString());
+
+    if (orderId == null) {
+      Get.snackbar('❌ Error', 'Invalid Order ID', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    final success = await CustomerOrderService.cancelOrder(orderId);
+
+    if (success) {
+      orders.removeAt(index);
+      Get.snackbar('✅ Success', 'Order cancelled successfully', snackPosition: SnackPosition.BOTTOM);
+    } else {
+      Get.snackbar('❌ Error', 'Failed to cancel order', snackPosition: SnackPosition.BOTTOM);
+    }
   }
+
 
   void openReviewDialog() {
     selectedRating.value = 0;

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 class CustomerOrderService {
   static const String _baseUrl = 'https://jumlaonline.com/api/get_cus_orders.php';
+  static const String _baseUrl_cancel = 'https://jumlaonline.com/api';
 
   static Future<List<Map<String, dynamic>>> fetchOrdersByStatus(String status) async {
     final token = await TokenStorage.getToken();
@@ -55,5 +56,34 @@ class CustomerOrderService {
         'delivery_time': 'N/A',
       };
     }).toList();
+  }
+
+
+  static Future<bool> cancelOrder(int orderId) async {
+    final token = await TokenStorage.getToken();
+    if (token == null) {
+      print('❌ No token found. Cannot cancel order.');
+      return false;
+    }
+
+    final String url = '$_baseUrl_cancel/cancel_order.php';
+    print('📤 Cancelling order ID: $orderId');
+
+    final response = await http.put(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'order_id': orderId}),
+    );
+
+    print('📥 Response Code: ${response.statusCode}');
+    print('📥 Response Body: ${response.body}');
+
+    if (response.statusCode != 200) return false;
+
+    final body = jsonDecode(response.body);
+    return body['status'] == 'success';
   }
 }

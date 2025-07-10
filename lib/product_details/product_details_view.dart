@@ -145,6 +145,7 @@ class ProductDetailsView extends StatelessWidget {
                             }
                           } catch (e) {
                             Get.snackbar("Error", e.toString());
+                            print(e.toString());
                           } finally {
                             controller.isAddingToCart.value = false;
                           }
@@ -473,54 +474,9 @@ class ProductDetailsView extends StatelessWidget {
                                 controller.discount.value.isNotEmpty;
 
                             final content =
-                                hasDiscount
-                                    ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: const [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.star,
-                                              size: 18,
-                                              color: Colors.amber,
-                                            ),
-                                            Icon(
-                                              Icons.star,
-                                              size: 18,
-                                              color: Colors.amber,
-                                            ),
-                                            Icon(
-                                              Icons.star,
-                                              size: 18,
-                                              color: Colors.amber,
-                                            ),
-                                            Icon(
-                                              Icons.star,
-                                              size: 18,
-                                              color: Colors.amber,
-                                            ),
-                                            Icon(
-                                              Icons.star_half,
-                                              size: 18,
-                                              color: Colors.amber,
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 6,
-                                        ), // 👈 Space between stars and text
-                                        Text(
-                                          "4.5 Rating",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                    : Row(
+                                Row(
                                       children: [
-                                        
+
                                         Obx(() {
                                           final reviews = controller.reviews;
 
@@ -530,6 +486,7 @@ class ProductDetailsView extends StatelessWidget {
                                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
                                             );
                                           }
+
 
                                           // Calculate average rating
                                           double totalRating = 0;
@@ -553,6 +510,9 @@ class ProductDetailsView extends StatelessWidget {
                                                 "${avgRating.toStringAsFixed(1)} Rating",
                                                 style: const TextStyle(fontWeight: FontWeight.bold),
                                               ),
+
+
+
 
                                             ],
                                           );
@@ -585,6 +545,19 @@ class ProductDetailsView extends StatelessWidget {
                           ),
                         ],
                       ),
+                      Obx(() {
+                        final variants = controller.variants;
+                        if (variants.isEmpty) {
+                          return const SizedBox(); // or Text('No variants')
+                        }
+
+                        final variantText = variants.map((v) => v['variant']).join(', '); // M, L
+
+                        return Text(
+                          'Size: $variantText',
+                          style: const TextStyle( fontWeight: FontWeight.w500),
+                        );
+                      }),
                     ],
                   ),
                   const SizedBox(height: 12),
